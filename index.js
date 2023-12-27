@@ -1,4 +1,8 @@
 const fs = require("fs");
+const http = require("http");
+
+//////////////////////////////////
+// FILES
 
 // Blocking synchronousy way
 // const textIn = fs.readFileSync("./txt/input.txt", "utf-8");
@@ -7,20 +11,31 @@ const fs = require("fs");
 // console.log(textIn);
 
 // Non-Blocking asynchronouse way
-fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
-  if (err) return console.error(err.message);
-  console.log(data1);
-  fs.readFile(`./txt/${data1}.txt`, "utf-8", (err, data2) => {
-    if (err) return console.error(err.message);
-    console.log(data2);
-    fs.readFile(`./txt/append.txt`, "utf-8", (err, data3) => {
-      if (err) return console.error(err.message);
-      console.log(data3);
-      fs.writeFile(`./txt/final.txt`, `${data2}\n${data3}`, "utf-8", (err) => {
-        if (err) return console.error(err.message);
-      });
-    });
-  });
+// fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
+//   if (err) return console.error(err.message);
+//   console.log(data1);
+//   fs.readFile(`./txt/${data1}.txt`, "utf-8", (err, data2) => {
+//     if (err) return console.error(err.message);
+//     console.log(data2);
+//     fs.readFile(`./txt/append.txt`, "utf-8", (err, data3) => {
+//       if (err) return console.error(err.message);
+//       console.log(data3);
+//       fs.writeFile(`./txt/final.txt`, `${data2}\n${data3}`, "utf-8", (err) => {
+//         if (err) return console.error(err.message);
+//       });
+//     });
+//   });
+// });
+
+// console.log("will read file.");
+
+//////////////////////////////////
+// SERVER
+
+const server = http.createServer((req, res) => {
+  res.end("Hello from the server!");
 });
 
-console.log("will read file.");
+server.listen(8000, "127.0.0.1", () => {
+  console.log("Listening to requests on port 8000.");
+});
