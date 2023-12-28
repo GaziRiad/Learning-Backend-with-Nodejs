@@ -32,14 +32,19 @@ const url = require("url");
 
 //////////////////////////////////
 // SERVER
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  console.log(req.url);
   const pathName = req.url;
-  if (pathName === "/overview" || pathName === "/")
-    res.end("This is the OVERVIEW");
-  else if (pathName === "/product") res.end("This is the PRODUCT");
-  else {
+  if (pathName === "/overview" || pathName === "/") res.end("Holocrow 1.0");
+  else if (pathName === "/product") res.end("Products page");
+  else if (pathName === "/api") {
+    res.writeHead(200, {
+      "content-type": "application/json",
+    });
+    res.end(data);
+  } else {
     res.writeHead(404, {
       "content-type": "text/html",
     });
@@ -48,5 +53,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(8000, "127.0.0.1", () => {
-  console.log("Listening to server...");
+  console.log("Listening to requests...");
 });
