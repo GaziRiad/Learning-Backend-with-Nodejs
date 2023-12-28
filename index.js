@@ -35,16 +35,66 @@ const url = require("url");
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
 
+const tempOverview = fs.readFileSync(
+  `${__dirname}/templates/template-overview.html`,
+  "utf-8"
+);
+const tempProduct = fs.readFileSync(
+  `${__dirname}/templates/template-product.html`,
+  "utf-8"
+);
+const tempCard = fs.readFileSync(
+  `${__dirname}/templates/template-card.html`,
+  "utf-8"
+);
+
+function renderTemplate(tempCard, el) {
+  let output = tempCard.replaceAll("{%PRODUCTNAME%}", el.productName);
+  output = output.replaceAll("{%IMAGE%}", el.image);
+  output = output.replaceAll("{%FROM%}", el.from);
+  output = output.replaceAll("{%NUTRIENTS%}", el.nutrients);
+  output = output.replaceAll("{%QUANTITY%}", el.quantity);
+  output = output.replaceAll("{%PRICE%}", el.price);
+  output = output.replaceAll("{%DESCRIPTION%}", el.description);
+  output = output.replaceAll("{%ID%}", el.id);
+
+  if (!el.organic) output = output.replaceAll("{%NOT_ORGANIC%}", "not-organic");
+  return output;
+}
+
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
-  if (pathName === "/overview" || pathName === "/") res.end("Holocrow 1.0");
-  else if (pathName === "/product") res.end("Products page");
-  else if (pathName === "/api") {
+  const { query, pathname } = url.parse(req.url, true);
+
+  // Overview page
+  if (pathname === "/overview" || pathname === "/") {
+    res.writeHead(200, {
+      "content-type": "text/html",
+    });
+    const cardsHtml = dataObj.map((el) => renderTemplate(tempCard, el));
+    const overviewOutput = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHtml);
+
+    res.end(overviewOutput);
+  }
+  // Product page
+  else if (pathname === "/product") {
+    const curEl = dataObj[query.id];
+    const outputProduct = renderTemplate(tempProduct, curEl);
+    res.writeHead(200, {
+      "content-type": "text/html",
+    });
+
+    res.end(outputProduct);
+  }
+  //API
+  else if (pathname === "/api") {
     res.writeHead(200, {
       "content-type": "application/json",
     });
     res.end(data);
-  } else {
+  }
+
+  // NOT FOUND
+  else {
     res.writeHead(404, {
       "content-type": "text/html",
     });
