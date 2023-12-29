@@ -2,10 +2,11 @@ const fs = require("fs");
 const http = require("http");
 const url = require("url");
 
+const renderTemplate = require("./modules/replaceTemplate");
 //////////////////////////////////
 // FILES
 
-// Blocking synchronousy way
+// Blocking synchronous way
 // const textIn = fs.readFileSync("./txt/input.txt", "utf-8");
 // const textOut = `This is what we know about the avocado: ${textIn}.\nCreated on ${Date.now()}`;
 // fs.writeFileSync("./txt/output.txt", textOut);
@@ -47,20 +48,6 @@ const tempCard = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
   "utf-8"
 );
-
-function renderTemplate(tempCard, el) {
-  let output = tempCard.replaceAll("{%PRODUCTNAME%}", el.productName);
-  output = output.replaceAll("{%IMAGE%}", el.image);
-  output = output.replaceAll("{%FROM%}", el.from);
-  output = output.replaceAll("{%NUTRIENTS%}", el.nutrients);
-  output = output.replaceAll("{%QUANTITY%}", el.quantity);
-  output = output.replaceAll("{%PRICE%}", el.price);
-  output = output.replaceAll("{%DESCRIPTION%}", el.description);
-  output = output.replaceAll("{%ID%}", el.id);
-
-  if (!el.organic) output = output.replaceAll("{%NOT_ORGANIC%}", "not-organic");
-  return output;
-}
 
 const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true);
